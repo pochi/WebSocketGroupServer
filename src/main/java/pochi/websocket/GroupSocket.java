@@ -1,5 +1,6 @@
 package pochi.websocket;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,30 +21,39 @@ public class GroupSocket
 	public static HashMap<String, List<Session>> groups = new HashMap<String, List<Session>>();
 	
     @OnOpen
-    public void onWebSocketConnect(Session sess)
+    public void onWebSocketConnect(Session session)
     {
     	List<Session> currentList;
-    	String groupId = sess.getRequestURI().getQuery();
+    	String groupId = session.getRequestURI().getQuery();
     	currentList = groups.containsKey(groupId) ? groups.get(groupId) : new ArrayList<Session>();
-    	currentList.add(sess);
+    	currentList.add(session);
     	groups.put(groupId, currentList);
         
-    	System.out.println("Socket Connected: " + sess);
+    	System.out.println("Socket Connected: " + session);
         System.out.println("Group is: " + groupId + " , and currnet group size is : " + currentList.size());
     }
     
     @OnMessage
-    public void onWebSocketText(String message)
+    public void onWebSocketText(String message, Session session)
     {
-        System.out.println("Received TEXT message: " + message);
+    	String groupId = session.getRequestURI().getQuery();
+    	List<Session> currentList = groups.get(groupId);
+    	for(Session currentSession : currentList) {
+    		try {
+				currentSession.getBasicRemote().sendText(message);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
     }
     
     @OnClose
-    public void onWebSocketClose(Session sess, CloseReason reason)
+    public void onWebSocketClose(CloseReason reason, Session session)
     {
-    	String groupId = sess.getRequestURI().getQuery();
+    	String groupId = session.getRequestURI().getQuery();
     	List<Session> currentList = groups.get(groupId);
-    	currentList.remove(sess);
+    	currentList.remove(session);
     	
         System.out.println("Socket Closed: " + reason);
         System.out.println("Group is: " + groupId + " , and currnet group size is : " + currentList.size());
