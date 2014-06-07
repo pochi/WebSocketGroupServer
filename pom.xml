@@ -10,7 +10,7 @@
         <package.main-class>pochi.websocket.GroupServer</package.main-class>
         <package.base-name>${name}-${version}</package.base-name>
         <package.jar-name>${name}.jar</package.jar-name>
-        <jettyVersion>9.1.4.v20140401</jettyVersion>
+        <jettyVersion>9.2.0.v20140526</jettyVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -27,13 +27,13 @@
 					</archive>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
 				<version>${jettyVersion}</version>
 			</plugin>
-			
+
 			 <plugin>
         		<artifactId>maven-eclipse-plugin</artifactId>
         		<configuration>
@@ -43,7 +43,7 @@
     	     </plugin>
 		</plugins>
 	</build>
-	
+
 	<dependencies>
     <!-- To write basic javax.websocket against -->
     <dependency>
@@ -55,13 +55,13 @@
     <dependency>
       <groupId>org.eclipse.jetty.websocket</groupId>
       <artifactId>javax-websocket-server-impl</artifactId>
-      <version>9.1.4.v20140401</version>
+      <version>9.2.0.v20140526</version>
     </dependency>
     <!-- To run javax.websocket client -->
     <dependency>
       <groupId>org.eclipse.jetty.websocket</groupId>
       <artifactId>javax-websocket-client-impl</artifactId>
-      <version>9.1.4.v20140401</version>
+      <version>9.2.0.v20140526</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

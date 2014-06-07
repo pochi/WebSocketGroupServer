@@ -3,7 +3,11 @@ package pochi.websocket;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Map;
 import java.util.List;
+import java.util.Collections;
 
 import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
@@ -13,12 +17,15 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
+import javax.websocket.EncodeException;
+
 
 @ClientEndpoint
 @ServerEndpoint(value="/events/")
 public class GroupSocket
 {
-		public static HashMap<String, List<Session>> groups = new HashMap<String, List<Session>>();
+		public static Map<String, List<Session>> groups =
+  		Collections.synchronizedMap(new HashMap<String, List<Session>>());
 
     @OnOpen
     public void onWebSocketConnect(Session session)
@@ -34,13 +41,13 @@ public class GroupSocket
     }
 
     @OnMessage
-    public void onWebSocketText(String message, Session session)
+    public void onWebSocketText(String message, Session session) throws IOException, EncodeException
     {
     	String groupId = session.getRequestURI().getQuery();
     	List<Session> currentList = groups.get(groupId);
     	for(Session currentSession : currentList) {
     		try {
-					currentSession.getBasicRemote().sendStringByFuture(message);
+					currentSession.getBasicRemote().sendObject(message);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -54,13 +61,13 @@ public class GroupSocket
     	List<Session> currentList = groups.get(groupId);
     	currentList.remove(session);
 
-        System.out.println("Socket Closed: " + reason);
-        System.out.println("Group is: " + groupId + " , and currnet group size is : " + currentList.size());
+      System.out.println("Socket Closed: " + reason);
+      System.out.println("Group is: " + groupId + " , and currnet group size is : " + currentList.size());
     }
 
     @OnError
     public void onWebSocketError(Throwable cause)
     {
-        cause.printStackTrace(System.err);
+      cause.printStackTrace(System.err);
     }
 }
