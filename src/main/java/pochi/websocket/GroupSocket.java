@@ -8,6 +8,9 @@ import java.util.Set;
 import java.util.Map;
 import java.util.List;
 import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
@@ -24,15 +27,15 @@ import javax.websocket.EncodeException;
 @ServerEndpoint(value="/events/")
 public class GroupSocket
 {
-		public static Map<String, List<Session>> groups =
-  		Collections.synchronizedMap(new HashMap<String, List<Session>>());
+		public static ConcurrentHashMap<String, CopyOnWriteArrayList<Session>> groups =
+			new ConcurrentHashMap<String, CopyOnWriteArrayList<Session>>();
 
     @OnOpen
     public void onWebSocketConnect(Session session)
     {
-    	List<Session> currentList;
+    	CopyOnWriteArrayList<Session> currentList;
     	String groupId = session.getRequestURI().getQuery();
-    	currentList = groups.containsKey(groupId) ? groups.get(groupId) : new ArrayList<Session>();
+    	currentList = groups.containsKey(groupId) ? groups.get(groupId) : new CopyOnWriteArrayList<Session>();
     	currentList.add(session);
     	groups.put(groupId, currentList);
 
@@ -66,7 +69,7 @@ public class GroupSocket
     }
 
     @OnError
-    public void onWebSocketError(Throwable cause)
+    public void onWebSocketError(Session session, Throwable cause)
     {
       cause.printStackTrace(System.err);
     }
