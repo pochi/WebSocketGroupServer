@@ -40,8 +40,9 @@ public class GroupSocket
     	currentList.add(session);
     	groups.put(groupId, currentList);
 
-    	System.out.println("Socket Connected: " + session);
-    	System.out.println("Group is: " + groupId + " , and currnet group size is : " + currentList.size());
+    	// System.out.println("Socket Connected: " + session);
+			if(currentList.size() == 100)
+    		System.out.println("Group is: " + groupId + " , and currnet group size is : " + currentList.size());
     }
 
     @OnMessage
@@ -49,13 +50,15 @@ public class GroupSocket
     {
     	String groupId = session.getRequestURI().getQuery();
     	List<Session> currentList = groups.get(groupId);
-    	for(Session currentSession : currentList) {
-    		try {
-					currentSession.getBasicRemote().sendObject(message);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-    	}
+			if(message != null) {
+	    	for(Session currentSession : currentList) {
+	    		try {
+						currentSession.getBasicRemote().sendObject(message);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+	    	}
+			}
     }
 
     @OnClose
