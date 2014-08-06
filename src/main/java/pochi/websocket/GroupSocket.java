@@ -35,6 +35,7 @@ public class GroupSocket
     {
     	CopyOnWriteArrayList<Session> currentList;
     	String groupId = session.getRequestURI().getQuery();
+			session.setMaxIdleTimeout(1000000000);
     	currentList = groups.containsKey(groupId) ? groups.get(groupId) : new CopyOnWriteArrayList<Session>();
     	currentList.add(session);
     	groups.put(groupId, currentList);
